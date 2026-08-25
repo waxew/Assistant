@@ -1,0 +1,36 @@
+راهنمای خیلی سریع اجرای ربات فروشگاه‌ساز
+========================================
+
+زبان پروژه: Python 3.12
+فریم‌ورک تلگرام: aiogram 3
+دیتابیس: PostgreSQL در سرور / SQLite در توسعه
+
+1) در BotFather یک ربات مادر بسازید و توکن آن را بگیرید.
+2) شناسه عددی تلگرام خودتان را از یک ربات نمایش ID بگیرید.
+3) فایل .env.example را با نام .env کپی کنید.
+4) این دستور را اجرا کنید:
+
+   python scripts/generate_key.py
+
+5) در فایل .env این سه مقدار را پر کنید:
+
+   BUILDER_BOT_TOKEN=توکن ربات مادر
+   SUPER_ADMIN_IDS=شناسه عددی شما
+   TOKEN_ENCRYPTION_KEY=خروجی مرحله 4
+
+6) اجرای پیشنهادی با Docker:
+
+   docker compose up -d --build
+   docker compose logs -f app
+
+7) ربات مادر را در تلگرام باز کنید و /start را بزنید.
+
+برای زرین‌پال، دامنه HTTPS را در PUBLIC_BASE_URL تنظیم کنید؛ سپس Merchant ID را
+در «پنل مدیریت > بخش مالی» وارد و درگاه را فعال کنید.
+
+تست‌ها:
+
+   python -m unittest discover -s tests -v
+   ruff check app tests scripts
+
+راهنمای کامل، ساختار سورس و روش توسعه نسخه‌های بعدی در README.md است.

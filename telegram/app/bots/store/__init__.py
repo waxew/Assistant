@@ -1,0 +1,1 @@
+"""Per-tenant store bot."""
