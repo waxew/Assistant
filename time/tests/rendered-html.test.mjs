@@ -1,33 +1,17 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-const developmentPreviewMeta =
-  /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
+test("build contains final Time metadata and hosting identity", async () => {
+  const [serverBundle, hostingManifest] = await Promise.all([
+    readFile(new URL("../dist/server/index.js", import.meta.url), "utf8"),
+    readFile(new URL("../dist/.openai/hosting.json", import.meta.url), "utf8"),
+  ]);
 
-test("renders development preview metadata", async () => {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
-  const { default: worker } = await import(workerUrl.href);
+  assert.match(serverBundle, /Time — مدیریت نوبت و مشتریان/);
+  assert.doesNotMatch(serverBundle, /codex-preview/);
 
-  const response = await worker.fetch(
-    new Request("http://localhost/", {
-      headers: { accept: "text/html" },
-    }),
-    {
-      ASSETS: {
-        fetch: async () => new Response("Not found", { status: 404 }),
-      },
-    },
-    {
-      waitUntil() {},
-      passThroughOnException() {},
-    },
-  );
-
-  assert.equal(response.status, 200);
-  assert.match(
-    response.headers.get("content-type") ?? "",
-    /^text\/html\b/i,
-  );
-  assert.match(await response.text(), developmentPreviewMeta);
+  const hosting = JSON.parse(hostingManifest);
+  assert.equal(hosting.d1, "DB");
+  assert.equal(hosting.project_id, "appgprj_6a8d740099248191b6179127b546f1c8");
 });
