@@ -23,6 +23,11 @@ jobs:
           unzip -q /tmp/qr-source.zip -d /tmp/qr-build
           test -f /tmp/qr-build/qr-barcode-studio/settings.gradle.kts
 
+      - name: Patch scanner package
+        run: |
+          sed -i 's/com.google.zxing.integration.android.ScanContract/com.journeyapps.barcodescanner.ScanContract/' /tmp/qr-build/qr-barcode-studio/app/src/main/java/com/waxew/qrbarcode/ui/QrBarcodeApp.kt
+          sed -i 's/com.google.zxing.integration.android.ScanOptions/com.journeyapps.barcodescanner.ScanOptions/' /tmp/qr-build/qr-barcode-studio/app/src/main/java/com/waxew/qrbarcode/ui/QrBarcodeApp.kt
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
