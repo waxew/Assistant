@@ -4,7 +4,7 @@ on:
   push:
     branches: [ build-daily-planner-apk ]
     paths:
-      - 'dailyplanner-build/**'
+      - '.ci/dailyplanner-v110/**'
       - '.github/workflows/dailyplanner-apk.yml'
   workflow_dispatch:
 
@@ -14,6 +14,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Reconstruct v1.1.0 source
+        run: |
+          mkdir -p /tmp/dailyplanner-v110
+          cat .ci/dailyplanner-v110/source.b64.* > /tmp/source.b64
+          base64 --decode --ignore-garbage /tmp/source.b64 > /tmp/AS-DailyPlanner-v1.1.0-source.zip
+          echo "6cf644cd31aeac1f6b2a1593785bf1b9e871fe6c55e478b1e0d86b8efd0bdcc2  /tmp/AS-DailyPlanner-v1.1.0-source.zip" | sha256sum -c -
+          unzip -q /tmp/AS-DailyPlanner-v1.1.0-source.zip -d /tmp/dailyplanner-v110
+          test -f /tmp/dailyplanner-v110/AS-DailyPlanner/settings.gradle.kts
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -27,15 +36,15 @@ jobs:
           gradle-version: '8.9'
 
       - name: Build debug APK
-        working-directory: dailyplanner-build
+        working-directory: /tmp/dailyplanner-v110/AS-DailyPlanner
         run: gradle :app:assembleDebug --stacktrace
 
       - name: Rename APK
-        run: cp dailyplanner-build/app/build/outputs/apk/debug/app-debug.apk AS-DailyPlanner-v1.0.0.apk
+        run: cp /tmp/dailyplanner-v110/AS-DailyPlanner/app/build/outputs/apk/debug/app-debug.apk AS-DailyPlanner-v1.1.0.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: AS-DailyPlanner-v1.0.0
-          path: AS-DailyPlanner-v1.0.0.apk
+          name: AS-DailyPlanner-v1.1.0
+          path: AS-DailyPlanner-v1.1.0.apk
           if-no-files-found: error
