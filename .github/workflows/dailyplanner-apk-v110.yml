@@ -26,6 +26,10 @@ jobs:
           unzip -q /tmp/AS-DailyPlanner-v1.1.0-source.zip -d /tmp/dailyplanner-v110
           test -f /tmp/dailyplanner-v110/AS-DailyPlanner/settings.gradle.kts
 
+      - name: Apply compile fixes
+        run: |
+          find /tmp/dailyplanner-v110/AS-DailyPlanner/app/src/main/java -name '*.kt' -type f -exec sed -i '/^import androidx\.compose\.foundation\.layout\.weight$/d' {} +
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
