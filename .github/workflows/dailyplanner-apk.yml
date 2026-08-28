@@ -48,3 +48,5 @@ jobs:
           name: AS-DailyPlanner-v1.1.0
           path: AS-DailyPlanner-v1.1.0.apk
           if-no-files-found: error
+
+# v1.1.0 source upload complete
