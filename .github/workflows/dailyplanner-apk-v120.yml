@@ -22,7 +22,10 @@ jobs:
           mkdir -p /tmp/dp120
           cat \
             .ci/dailyplanner-v120-final2/part.00 \
-            .ci/dailyplanner-v120-final2/part.01a \
+            .ci/dailyplanner-v120-final2/part.01a0 \
+            .ci/dailyplanner-v120-final2/part.01a1 \
+            .ci/dailyplanner-v120-final2/part.01a20 \
+            .ci/dailyplanner-v120-final2/part.01a21 \
             .ci/dailyplanner-v120-final2/part.01b \
             .ci/dailyplanner-v120-final2/part.01c \
             .ci/dailyplanner-v120-final2/part.02 \
