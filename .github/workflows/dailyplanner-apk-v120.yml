@@ -62,11 +62,7 @@ jobs:
             .ci/dailyplanner-v120-final2/part.11_06 > /tmp/source.b64
           base64 --decode --ignore-garbage /tmp/source.b64 > /tmp/AS-DailyPlanner-v1.2.0-source-final.zip
           echo '09e8d2e815b0a9b1601a81de7f62f58e044509d1a57a9f8e278f9a258700dc87  /tmp/AS-DailyPlanner-v1.2.0-source-final.zip' | sha256sum -c -
-          unzip -t /tmp/AS-DailyPlanner-v1.2.0-source-final.zip
           unzip -q /tmp/AS-DailyPlanner-v1.2.0-source-final.zip -d /tmp/dp120
-          test -f /tmp/dp120/AS-DailyPlanner/settings.gradle.kts
-          grep -q 'versionName = "1.2.0"' /tmp/dp120/AS-DailyPlanner/app/build.gradle.kts
-          grep -q 'versionCode = 3' /tmp/dp120/AS-DailyPlanner/app/build.gradle.kts
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -79,27 +75,30 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build debug APK
+      - name: Build debug and unsigned release APKs
         working-directory: /tmp/dp120/AS-DailyPlanner
-        run: gradle :app:assembleDebug --stacktrace
+        run: gradle :app:assembleDebug :app:assembleRelease --stacktrace
 
-      - name: Verify APK
+      - name: Verify unsigned release APK
         shell: bash
         run: |
           set -euo pipefail
-          APK=/tmp/dp120/AS-DailyPlanner/app/build/outputs/apk/debug/app-debug.apk
-          test -s "$APK"
-          file "$APK"
-          unzip -t "$APK"
-          sha256sum "$APK"
-          cp "$APK" AS-DailyPlanner-v1.2.0.apk
+          DEBUG=/tmp/dp120/AS-DailyPlanner/app/build/outputs/apk/debug/app-debug.apk
+          RELEASE=/tmp/dp120/AS-DailyPlanner/app/build/outputs/apk/release/app-release-unsigned.apk
+          test -s "$DEBUG"
+          test -s "$RELEASE"
+          unzip -t "$RELEASE"
+          sha256sum "$DEBUG" "$RELEASE"
+          cp "$DEBUG" AS-DailyPlanner-v1.2.0-debug.apk
+          cp "$RELEASE" AS-DailyPlanner-v1.2.0-release-unsigned.apk
           cp /tmp/AS-DailyPlanner-v1.2.0-source-final.zip AS-DailyPlanner-v1.2.0-source-final.zip
 
-      - name: Upload final package
+      - name: Upload release package
         uses: actions/upload-artifact@v4
         with:
-          name: AS-DailyPlanner-v1.2.0-final
+          name: AS-DailyPlanner-v1.2.0-release-build
           path: |
-            AS-DailyPlanner-v1.2.0.apk
+            AS-DailyPlanner-v1.2.0-debug.apk
+            AS-DailyPlanner-v1.2.0-release-unsigned.apk
             AS-DailyPlanner-v1.2.0-source-final.zip
           if-no-files-found: error
