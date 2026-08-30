@@ -35,9 +35,31 @@ jobs:
             .ci/dailyplanner-v120-final2/part.06 \
             .ci/dailyplanner-v120-final2/part.07 \
             .ci/dailyplanner-v120-final2/part.08 \
-            .ci/dailyplanner-v120-final2/part.09 \
-            .ci/dailyplanner-v120-final2/part.10 \
-            .ci/dailyplanner-v120-final2/part.11 > /tmp/source.b64
+            .ci/dailyplanner-v120-final2/part.09_00 \
+            .ci/dailyplanner-v120-final2/part.09_01 \
+            .ci/dailyplanner-v120-final2/part.09_02 \
+            .ci/dailyplanner-v120-final2/part.09_03 \
+            .ci/dailyplanner-v120-final2/part.09_04 \
+            .ci/dailyplanner-v120-final2/part.09_05 \
+            .ci/dailyplanner-v120-final2/part.09_06 \
+            .ci/dailyplanner-v120-final2/part.09_07 \
+            .ci/dailyplanner-v120-final2/part.09_08 \
+            .ci/dailyplanner-v120-final2/part.10_00 \
+            .ci/dailyplanner-v120-final2/part.10_01 \
+            .ci/dailyplanner-v120-final2/part.10_02 \
+            .ci/dailyplanner-v120-final2/part.10_03 \
+            .ci/dailyplanner-v120-final2/part.10_04 \
+            .ci/dailyplanner-v120-final2/part.10_05 \
+            .ci/dailyplanner-v120-final2/part.10_06 \
+            .ci/dailyplanner-v120-final2/part.10_07 \
+            .ci/dailyplanner-v120-final2/part.10_08 \
+            .ci/dailyplanner-v120-final2/part.11_00 \
+            .ci/dailyplanner-v120-final2/part.11_01 \
+            .ci/dailyplanner-v120-final2/part.11_02 \
+            .ci/dailyplanner-v120-final2/part.11_03 \
+            .ci/dailyplanner-v120-final2/part.11_04 \
+            .ci/dailyplanner-v120-final2/part.11_05 \
+            .ci/dailyplanner-v120-final2/part.11_06 > /tmp/source.b64
           base64 --decode --ignore-garbage /tmp/source.b64 > /tmp/AS-DailyPlanner-v1.2.0-source-final.zip
           echo '09e8d2e815b0a9b1601a81de7f62f58e044509d1a57a9f8e278f9a258700dc87  /tmp/AS-DailyPlanner-v1.2.0-source-final.zip' | sha256sum -c -
           unzip -t /tmp/AS-DailyPlanner-v1.2.0-source-final.zip
