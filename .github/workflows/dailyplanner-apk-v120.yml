@@ -1,0 +1,78 @@
+name: DailyPlanner APK v1.2.0
+
+on:
+  push:
+    branches: [ dailyplanner-v120-final ]
+    paths:
+      - '.ci/dailyplanner-v120-final2/**'
+      - '.github/workflows/dailyplanner-apk-v120.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Reconstruct and verify v1.2.0 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/dp120
+          cat \
+            .ci/dailyplanner-v120-final2/part.00 \
+            .ci/dailyplanner-v120-final2/part.01 \
+            .ci/dailyplanner-v120-final2/part.02 \
+            .ci/dailyplanner-v120-final2/part.03 \
+            .ci/dailyplanner-v120-final2/part.04 \
+            .ci/dailyplanner-v120-final2/part.05 \
+            .ci/dailyplanner-v120-final2/part.06 \
+            .ci/dailyplanner-v120-final2/part.07 \
+            .ci/dailyplanner-v120-final2/part.08 \
+            .ci/dailyplanner-v120-final2/part.09 \
+            .ci/dailyplanner-v120-final2/part.10 \
+            .ci/dailyplanner-v120-final2/part.11 > /tmp/source.b64
+          base64 --decode --ignore-garbage /tmp/source.b64 > /tmp/AS-DailyPlanner-v1.2.0-source-final.zip
+          echo '09e8d2e815b0a9b1601a81de7f62f58e044509d1a57a9f8e278f9a258700dc87  /tmp/AS-DailyPlanner-v1.2.0-source-final.zip' | sha256sum -c -
+          unzip -t /tmp/AS-DailyPlanner-v1.2.0-source-final.zip
+          unzip -q /tmp/AS-DailyPlanner-v1.2.0-source-final.zip -d /tmp/dp120
+          test -f /tmp/dp120/AS-DailyPlanner/settings.gradle.kts
+          grep -q 'versionName = "1.2.0"' /tmp/dp120/AS-DailyPlanner/app/build.gradle.kts
+          grep -q 'versionCode = 3' /tmp/dp120/AS-DailyPlanner/app/build.gradle.kts
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build debug APK
+        working-directory: /tmp/dp120/AS-DailyPlanner
+        run: gradle :app:assembleDebug --stacktrace
+
+      - name: Verify APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=/tmp/dp120/AS-DailyPlanner/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          file "$APK"
+          unzip -t "$APK"
+          sha256sum "$APK"
+          cp "$APK" AS-DailyPlanner-v1.2.0.apk
+          cp /tmp/AS-DailyPlanner-v1.2.0-source-final.zip AS-DailyPlanner-v1.2.0-source-final.zip
+
+      - name: Upload final package
+        uses: actions/upload-artifact@v4
+        with:
+          name: AS-DailyPlanner-v1.2.0-final
+          path: |
+            AS-DailyPlanner-v1.2.0.apk
+            AS-DailyPlanner-v1.2.0-source-final.zip
+          if-no-files-found: error
